@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BetSim Pro – NBA &amp; MLB</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="header" data-testid="header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="logo" data-testid="logo">⚡ BetSim Pro</div>
+        <div class="brand-pill">NBA &amp; MLB</div>
+      </div>
+      <nav class="nav">
+        <a href="#" class="nav-link active" data-testid="nav-markets">Markets</a>
+        <a href="#" class="nav-link" id="navMyBets" data-testid="nav-my-bets">My Bets</a>
+      </nav>
+      <div class="header-right">
+        <div class="balance-pill" data-testid="user-balance">
+          💰 Balance: <span id="balance" data-testid="balance-amount">$1,000.00</span>
+        </div>
+        <div class="user-pill" data-testid="user-badge">
+          <span>👤</span>
+          <span id="headerUsername" data-testid="header-username">User</span>
+        </div>
+        <button class="btn-signout" id="logoutBtn" data-testid="logout-btn">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ DATE BAR ═══ -->
+  <div class="date-bar" data-testid="date-bar">
+    <button class="date-nav-btn" id="prevDay" aria-label="Previous day">‹</button>
+    <label class="date-center" for="datePicker" title="Click to pick a date">
+      <span class="date-cal-icon">📅</span>
+      <span class="date-text-col">
+        <span class="date-sub-lbl">Viewing Date</span>
+        <span class="date-main-val" id="dateValue" data-testid="date-value">May 5, 2026</span>
+      </span>
+      <input type="date" id="datePicker" class="date-picker-input" value="2026-05-05" aria-label="Pick date" />
+    </label>
+    <span class="date-dot" id="dateDot" title="Data available for this date"></span>
+    <button class="date-nav-btn" id="nextDay" aria-label="Next day">›</button>
+    <button class="date-today-btn" id="todayBtn">Today</button>
+  </div>
+
+  <!-- ═══ MARKET TABS ═══ -->
+  <nav class="tabs-bar" data-testid="tabs-bar" aria-label="Market filters">
+    <div class="tabs-scroll">
+      <button class="tab active" data-filter="all"          data-testid="filter-all">🏆 All</button>
+      <div class="tab-sep"></div>
+      <button class="tab tab-nba"      data-filter="nba"          data-testid="filter-nba">🏀 NBA</button>
+      <button class="tab tab-nba sub"  data-filter="nba_totals"   data-testid="filter-nba-totals">Totals</button>
+      <button class="tab tab-nba sub"  data-filter="nba_spreads"  data-testid="filter-nba-spreads">Spreads</button>
+      <div class="tab-sep"></div>
+      <button class="tab tab-mlb"      data-filter="mlb"          data-testid="filter-mlb">⚾ MLB</button>
+      <button class="tab tab-mlb sub"  data-filter="mlb_totals"   data-testid="filter-mlb-totals">Totals</button>
+      <button class="tab tab-mlb sub"  data-filter="mlb_moneyline" data-testid="filter-mlb-moneyline">Moneyline</button>
+      <button class="tab tab-mlb sub"  data-filter="mlb_runline"  data-testid="filter-mlb-runline">Run Line</button>
+    </div>
+  </nav>
+
+  <!-- ═══ STATS BAR ═══ -->
+  <div class="stats-bar" data-testid="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <span class="stat-num"       id="statTotal">—</span>
+        <span class="stat-lbl">Markets</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <span class="stat-num green" id="statBet">—</span>
+        <span class="stat-lbl">BET Picks</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <span class="stat-num"       id="statPass">—</span>
+        <span class="stat-lbl">PASS</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat-item">
+        <span class="stat-num small" id="statDate" data-testid="stat-date">—</span>
+        <span class="stat-lbl">Date</span>
+      </div>
+      <button class="bet-only-toggle" id="betOnlyBtn" data-testid="bet-only-toggle">
+        <span class="toggle-dot"></span>
+        BET Only
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ PAGE BODY ═══ -->
+  <div class="page-body">
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <div class="loading-wrap" id="loadingSpinner" data-testid="loading-spinner">
+        <div class="spinner-ring"></div>
+        <p>Loading markets…</p>
+      </div>
+
+      <div class="cards-grid" id="matchesContainer"
+           data-testid="matches-container" style="display:none;"></div>
+
+      <div class="empty-state" id="emptyState" style="display:none;" data-testid="empty-state">
+        <div class="empty-icon">📭</div>
+        <h3>No data for this date</h3>
+        <p>Predictions are available for <strong>May 5, 6 &amp; 7, 2026</strong>.<br/>Use the arrows to navigate to those dates.</p>
+        <button class="btn-goto" id="gotoDataBtn" data-testid="goto-data-btn">Go to May 5, 2026</button>
+      </div>
+
+    </main>
+
+    <!-- Bet Slip Panel -->
+    <aside class="bet-slip-panel" data-testid="bet-slip">
+      <div class="slip-head">
+        <span class="slip-title">Bet Slip</span>
+        <span class="slip-count" id="slipBadge">0</span>
+      </div>
+
+      <div class="slip-empty-wrap" id="betSlipEmpty" data-testid="bet-slip-empty">
+        <div class="slip-empty-icon">🎯</div>
+        <p class="slip-empty-text">No selection yet</p>
+        <p class="slip-empty-sub">Click any odds button to add a pick</p>
+      </div>
+
+      <div id="betSlipContent" style="display:none;" class="slip-content-wrap">
+        <div class="slip-pick-card" id="slipItem">
+          <button class="slip-remove" id="slipClose" data-testid="slip-close">✕</button>
+          <div class="slip-match-text"  id="slipMatch"></div>
+          <div class="slip-sel-text"    id="slipSelection"></div>
+          <div class="slip-odds-text"   id="slipOdds"></div>
+        </div>
+        <div class="slip-form-area">
+          <label class="slip-form-label" for="slipStake">Stake (USD)</label>
+          <input type="number" id="slipStake" data-testid="slip-stake"
+                 class="slip-stake-input" min="1" max="10000" placeholder="Enter amount" />
+          <div class="slip-return-row">
+            <span class="slip-return-lbl">Est. Return</span>
+            <span class="slip-return-amt" id="slipReturn" data-testid="slip-return">$0.00</span>
+          </div>
+          <button class="btn-place-bet" id="slipPlaceBtn" data-testid="slip-place-btn">
+            Place Bet →
+          </button>
+        </div>
+      </div>
+    </aside>
+
+  </div><!-- /page-body -->
+
+  <!-- ═══ BET MODAL ═══ -->
+  <div class="modal-overlay" id="modalOverlay" data-testid="modal-overlay" style="display:none;">
+    <div class="modal" data-testid="bet-modal" role="dialog" aria-modal="true">
+
+      <button class="modal-close" id="modalClose" data-testid="modal-close" aria-label="Close">✕</button>
+
+      <!-- Normal -->
+      <div id="modalNormal">
+        <div class="modal-header">
+          <h2 data-testid="modal-title">Place Your Bet</h2>
+        </div>
+        <div class="modal-body">
+          <div class="bet-details">
+            <div class="detail-row">
+              <span class="detail-label">Match</span>
+              <span class="detail-value" id="modalMatch" data-testid="modal-match"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Selection</span>
+              <span class="detail-value selection-badge" id="modalSelection" data-testid="modal-selection"></span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Odds</span>
+              <span class="detail-value odds-badge" id="modalOdds" data-testid="modal-odds"></span>
+            </div>
+          </div>
+          <div class="stake-section">
+            <label class="stake-label">Bet Amount ($)</label>
+            <input type="number" id="modalBetAmount" data-testid="modal-bet-amount"
+                   class="modal-input" min="1" max="10000" placeholder="Enter stake…" />
+            <div class="quick-amounts" data-testid="quick-amounts">
+              <button class="quick-btn" data-amount="10"  data-testid="quick-10">$10</button>
+              <button class="quick-btn" data-amount="25"  data-testid="quick-25">$25</button>
+              <button class="quick-btn" data-amount="50"  data-testid="quick-50">$50</button>
+              <button class="quick-btn" data-amount="100" data-testid="quick-100">$100</button>
+            </div>
+          </div>
+          <div class="payout-info">
+            <span>Potential Return</span>
+            <span class="payout-value" id="modalPayout" data-testid="modal-payout">$0.00</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel"  id="cancelBtn"  data-testid="cancel-btn">Cancel</button>
+          <button class="btn-confirm" id="confirmBtn" data-testid="confirm-bet-btn" disabled>Confirm Bet</button>
+        </div>
+      </div>
+
+      <!-- Processing -->
+      <div id="processingState" style="display:none;" data-testid="processing-state">
+        <div class="state-center">
+          <div class="spinner-ring"></div>
+          <p>Processing your bet…</p>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div id="successState" style="display:none;" data-testid="success-state">
+        <div class="state-center success">
+          <div class="state-icon success-icon">✓</div>
+          <h2 data-testid="success-message">Bet Placed!</h2>
+          <div class="success-details">
+            <div class="detail-row"><span class="detail-label">Match</span>     <span id="successMatch"     data-testid="success-match"></span></div>
+            <div class="detail-row"><span class="detail-label">Selection</span> <span id="successSelection" data-testid="success-selection"></span></div>
+            <div class="detail-row"><span class="detail-label">Stake</span>     <span id="successStake"     data-testid="success-stake"></span></div>
+            <div class="detail-row"><span class="detail-label">Return</span>    <span id="successReturn"    data-testid="success-return"></span></div>
+          </div>
+          <div class="bet-ref" data-testid="bet-reference">
+            Ref: <strong id="betRef" data-testid="bet-ref-value"></strong>
+          </div>
+          <button class="btn-done" id="doneBtn" data-testid="done-btn">Done</button>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="errorState" style="display:none;" data-testid="error-state">
+        <div class="state-center error">
+          <div class="state-icon error-icon">✗</div>
+          <h2>Bet Failed</h2>
+          <p id="errorMessage" data-testid="error-message"></p>
+          <div class="error-actions">
+            <button class="btn-cancel"  id="errorClose" data-testid="error-close">Close</button>
+            <button class="btn-confirm" id="retryBtn"   data-testid="retry-btn">Try Again</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ TOAST ═══ -->
+  <div class="toast" id="toast" data-testid="toast" role="alert"></div>
+
+  <!-- ═══ HISTORY MODAL ═══ -->
+  <div class="modal-overlay" id="historyOverlay" data-testid="history-overlay" style="display:none;">
+    <div class="modal history-modal" data-testid="history-modal" role="dialog" aria-modal="true">
+      <div class="history-header">
+        <h2 data-testid="history-title">My Bet History</h2>
+        <button class="modal-close" id="historyClose" data-testid="history-close" aria-label="Close">✕</button>
+      </div>
+      <div class="history-toolbar">
+        <span class="history-count" id="historyCount" data-testid="history-count">0 bets</span>
+        <button class="btn-clear-history" id="clearHistoryBtn" data-testid="clear-history-btn">Clear All</button>
+      </div>
+      <div class="history-body" id="historyBody" data-testid="history-body">
+        <div class="history-empty" id="historyEmpty" data-testid="history-empty">
+          No bets placed yet.<br/>Place a bet to see it here.
+        </div>
+        <table class="history-table" id="historyTable" data-testid="history-table" style="display:none;">
+          <thead>
+            <tr>
+              <th>Bet ID</th><th>Match</th><th>Selection</th>
+              <th>Odds</th><th>Stake</th><th>Return</th><th>Date / Time</th>
+            </tr>
+          </thead>
+          <tbody id="historyTableBody" data-testid="history-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

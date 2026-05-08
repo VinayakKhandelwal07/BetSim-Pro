@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BetSim Pro – Home</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <div class="brand">
+        <span class="logo">⚡ BetSim Pro</span>
+        <span class="brand-pill">BETA</span>
+      </div>
+      <nav class="nav">
+        <span class="nav-link active">Home</span>
+      </nav>
+      <div class="header-right">
+        <div class="user-pill">👤 <span id="headerUsername">User</span></div>
+        <button class="btn-signout" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="home-body">
+    <div class="home-inner">
+
+      <!-- Welcome -->
+      <div class="home-welcome">
+        <div class="welcome-text">
+          <h1>Welcome back, <span id="welcomeUsername" class="welcome-accent">User</span></h1>
+          <p>Here's your betting overview. Head to the dashboard to start placing picks.</p>
+        </div>
+        <div class="welcome-balance">
+          <span class="balance-label">Virtual Balance</span>
+          <span class="balance-value" id="homeBalance">$1,000.00</span>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="home-stats-row">
+        <div class="home-stat-card">
+          <span class="home-stat-icon">🏆</span>
+          <div>
+            <div class="home-stat-num" id="statTotalBets">0</div>
+            <div class="home-stat-lbl">Total Bets Placed</div>
+          </div>
+        </div>
+        <div class="home-stat-card">
+          <span class="home-stat-icon">💰</span>
+          <div>
+            <div class="home-stat-num" id="statWagered">$0.00</div>
+            <div class="home-stat-lbl">Total Wagered</div>
+          </div>
+        </div>
+        <div class="home-stat-card">
+          <span class="home-stat-icon">🎯</span>
+          <div>
+            <div class="home-stat-num green" id="statReturns">$0.00</div>
+            <div class="home-stat-lbl">Total Returns</div>
+          </div>
+        </div>
+        <div class="home-stat-card">
+          <span class="home-stat-icon">📅</span>
+          <div>
+            <div class="home-stat-num" id="statDates">3</div>
+            <div class="home-stat-lbl">Days of Data</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard CTA -->
+      <div class="dashboard-cta-card">
+        <div class="cta-left">
+          <h2>Betting Dashboard</h2>
+          <p>View today's NBA and MLB predictions, analyze odds, and place your simulated bets.</p>
+          <div class="cta-tags">
+            <span class="cta-tag nba-tag">🏀 NBA</span>
+            <span class="cta-tag mlb-tag">⚾ MLB</span>
+            <span class="cta-tag">Totals</span>
+            <span class="cta-tag">Spreads</span>
+            <span class="cta-tag">Moneylines</span>
+          </div>
+        </div>
+        <a href="dashboard.html" class="btn-open-dashboard">Open Dashboard →</a>
+      </div>
+
+      <!-- Recent Bets -->
+      <div class="home-section">
+        <div class="home-section-head">
+          <h2>Recent Bets</h2>
+          <a href="dashboard.html" class="home-view-all">View All in Dashboard →</a>
+        </div>
+        <div id="recentBetsContent">
+          <div class="home-empty">No bets placed yet. Open the dashboard to get started.</div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script>
+    'use strict';
+    requireAuth();
+
+    const username = getUsername();
+    document.getElementById('headerUsername').textContent = username;
+    document.getElementById('welcomeUsername').textContent = username;
+
+    const history = getBetHistory();
+    document.getElementById('statTotalBets').textContent = history.length;
+
+    const totalWagered = history.reduce((s, b) => s + (b.stake || 0), 0);
+    document.getElementById('statWagered').textContent = '$' + totalWagered.toFixed(2);
+
+    const totalReturns = history.reduce((s, b) => s + (b.totalReturn || 0), 0);
+    document.getElementById('statReturns').textContent = '$' + totalReturns.toFixed(2);
+
+    if (history.length > 0) {
+      const recent = history.slice(0, 5);
+      let html = '<table class="home-bets-table"><thead><tr>';
+      html += '<th>Ref</th><th>Match</th><th>Selection</th><th>Odds</th><th>Stake</th><th>Return</th>';
+      html += '</tr></thead><tbody>';
+      recent.forEach(function(b) {
+        const oddsStr = (b.odds >= 0 ? '+' : '') + b.odds;
+        html += '<tr>';
+        html += '<td class="bet-id-cell">' + (b.ref || '—') + '</td>';
+        html += '<td>' + (b.match || '—') + '</td>';
+        html += '<td><span class="selection-badge">' + (b.selection || '—') + '</span></td>';
+        html += '<td><span class="odds-badge-sm">' + oddsStr + '</span></td>';
+        html += '<td>$' + (b.stake || 0).toFixed(2) + '</td>';
+        html += '<td class="return-cell">$' + (b.totalReturn || 0).toFixed(2) + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('recentBetsContent').innerHTML = html;
+    }
+  </script>
+</body>
+</html>

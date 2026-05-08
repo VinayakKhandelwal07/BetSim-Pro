@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BetSim Pro – Create Account</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="login-page">
+
+  <div class="login-container" style="max-width: 440px;">
+    <div class="login-card">
+
+      <div class="login-logo">⚡ BetSim Pro</div>
+      <h2 class="login-title">Create Account</h2>
+      <p class="login-subtitle">Join BetSim Pro and start betting smarter</p>
+
+      <form id="signupForm" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="fullname">Full Name</label>
+          <input
+            type="text"
+            id="fullname"
+            class="form-input"
+            placeholder="Your full name"
+            autocomplete="name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            class="form-input"
+            placeholder="Choose a username"
+            autocomplete="username"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            class="form-input"
+            placeholder="your@email.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            class="form-input"
+            placeholder="Min. 6 characters"
+            autocomplete="new-password"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="confirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            class="form-input"
+            placeholder="Repeat your password"
+            autocomplete="new-password"
+            required
+          />
+        </div>
+
+        <div class="login-error" id="signupError" style="display:none;"></div>
+
+        <button type="submit" class="btn-login">Create Account</button>
+
+      </form>
+
+      <p class="auth-switch-text">
+        Already have an account? <a href="login.html" class="auth-switch-link">Sign In</a>
+      </p>
+
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script>
+    'use strict';
+    if (isLoggedIn()) { window.location.href = 'home.html'; }
+
+    document.getElementById('signupForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const fullname = document.getElementById('fullname').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm  = document.getElementById('confirmPassword').value;
+      const errorEl  = document.getElementById('signupError');
+
+      errorEl.style.display = 'none';
+
+      if (!fullname || !username || !email || !password || !confirm) {
+        errorEl.textContent = 'Please fill in all fields.';
+        errorEl.style.display = '';
+        return;
+      }
+      if (password.length < 6) {
+        errorEl.textContent = 'Password must be at least 6 characters.';
+        errorEl.style.display = '';
+        return;
+      }
+      if (password !== confirm) {
+        errorEl.textContent = 'Passwords do not match.';
+        errorEl.style.display = '';
+        return;
+      }
+
+      const result = signup(username, email, password);
+      if (result.ok) {
+        login(username, password);
+        window.location.href = 'home.html';
+      } else {
+        errorEl.textContent = result.error;
+        errorEl.style.display = '';
+      }
+    });
+  </script>
+</body>
+</html>
