@@ -326,7 +326,14 @@ function showSuccess(matchTitle, selection, stake, odds) {
   document.getElementById('successReturn').textContent    = fmt(payout);
   document.getElementById('betRef').textContent           = ref;
 
-  saveBetToHistory({ id: ref, match: matchTitle, selection, odds, stake, ret: payout, date: new Date().toLocaleString() });
+  const TWO_MIN_MS = 2 * 60 * 1000;
+  const isDuplicate = getBetHistory().some(b =>
+    b.match === matchTitle && b.selection === selection && b.odds === odds &&
+    (Date.now() - new Date(b.date).getTime()) < TWO_MIN_MS
+  );
+  if (!isDuplicate) {
+    saveBetToHistory({ id: ref, match: matchTitle, selection, odds, stake, ret: payout, date: new Date().toLocaleString() });
+  }
   showModalState('success');
   showToast('Bet placed! Ref: ' + ref, 'success');
 }
